@@ -9,15 +9,16 @@
 	</p>
 	<form>
 	  <div class="custom-file">
-	    <input type="file" class="custom-file-input" @change="setFile" id="inputfileField" accept="image/*">
+	    <input type="file" class="custom-file-input" @change="setFile" id="inputfileField" accept="image/*;capture=camera">
 	    <label  class="custom-file-label" for="inputFileField">{{fileMessage}}</label>
 	  </div>
 	</form>
       </div>
     </div>
+    
     <div class="row">
       <div class="col-md-12">
-	<img v-if="imageURL" :src="imageURL" class="img-fluid" alt="Loaded Image">
+	<img v-if="imageURL" :src="imageURL" class="img-thumbnail" alt="Loaded Image">
       </div>
     </div>
   </div>
@@ -53,7 +54,7 @@ export default {
 	    this.imageFile = files[0]
 	    this.imageURL = URL.createObjectURL(this.imageFile)
 	    this.fileMessage = this.imageFile.name
-	    console.log(this.imageFile)
+
 	},
 	uploadImage () {
 
