@@ -1,17 +1,42 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+<div id="app">
+  <navbar></navbar>
+  <div class="container-fluid">
+    <router-view></router-view>
   </div>
+
+</div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios'
+import Navbar from '@/components/Navbar'
+import Foot from '@/components/Foot'
+import { mapGetters } from 'vuex'
 
 export default {
-  name: 'app',
+    name: 'app',
+    computed: {
+	...mapGetters({ currentUser: 'currentUser' })
+    },
+    created () {
+	this.checkCurrentLogin()
+    },
+    updated () {
+	this.checkCurrentLogin()
+    },
+    methods: {
+	checkCurrentLogin () {
+	    if (!localStorage.user) {
+		this.$router.push('/login')
+	    } else {
+		this.$store.dispatch('login')
+	    }
+	}
+    },
   components: {
-    HelloWorld
+      Navbar,
+      Foot
   }
 }
 </script>
