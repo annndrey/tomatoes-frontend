@@ -2,23 +2,38 @@
 <div class="mainpage">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-sm-12">
 	
 	<p>
 	  <flash-message transition-name="fade"></flash-message> 
 	</p>
-	<form>
-	  <div class="custom-file">
-	    <input type="file" class="custom-file-input" @change="setFile" id="inputfileField" accept="image/*;capture=camera">
-	    <label  class="custom-file-label" for="inputFileField">{{fileMessage}}</label>
+
+	<form v-on:submit.prevent="uploadImages">
+	  <div class="input-group">
+	    <div class="input-group-prepend">
+	      <button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img src="@/assets/plus.svg"></button>
+	    </div>
+
+	    <div class="custom-file">
+	      <input type="file" class="custom-file-input" @change="setFile" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
+	      <label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{fileMessage}}</label>
+	    </div>
 	  </div>
+	  <button class="btn btn-block btn-primary mt-2" type="submit">отправить</button>
 	</form>
       </div>
     </div>
+
     
-    <div class="row">
+    <div class="row" v-if="imageURL">
       <div class="col-md-12">
-	<img v-if="imageURL" :src="imageURL" class="img-thumbnail" alt="Loaded Image">
+	<div class="card">
+	  <img  :src="imageURL" class="card-img-top" alt="Loaded Image">
+	  <div class="card-body">
+	    <h5 class="card-title">{{this.fileMessage}}</h5>
+	    <p class="card-text">{{this.responseData}}</p>
+	  </div>
+	</div>
       </div>
     </div>
   </div>
@@ -47,6 +62,7 @@ export default {
     },
     methods: {
 	setFile(e) {
+	    this.clearFields()
 	    let files = e.target.files || e.dataTransfer.files
 	    if (!files.length) {
 		return
@@ -54,24 +70,43 @@ export default {
 	    this.imageFile = files[0]
 	    this.imageURL = URL.createObjectURL(this.imageFile)
 	    this.fileMessage = this.imageFile.name
-
 	},
-	uploadImage () {
-
+	uploadImages() {
+	    console.log('uploading images11')
+	    this.flashSuccess('uploading files', {timeout: 2000})
+	    let formData = new FormData()
+	    formData.append('file', this.imageFile)
+	    this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+	    .then(request => this.parseResponse(request))
+	    .catch(request => this.failedResponse(request))
+	},
+	addFileUploadField () {
+	    console.log('add file upload field')
+	},
+	parseResponse(resp) {
+	    console.log(resp.data)
+	    this.responseData = resp.data
+	},
+	failedResponse(resp) {
+	    console.log(resp)
 	},
 	clearFields() {
+	    this.imageFile = ""
+	    this.responseData = ""
+	    this.imageURL =  ""
+	    this.fileMessage =  "Добавьте изображение"
 	}
     }
 
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style>
   .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
   }
-  .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  .fade-enter, .fade-leave-to {
   opacity: 0;
   }
   span.error{
@@ -82,7 +117,7 @@ export default {
   }
   .blank_row
   .statusmessage {
-  height: 22px !important; /* overwrites any other rules */
+  height: 22px !important; 
   }
   h3 {
   margin: 40px 0 0;

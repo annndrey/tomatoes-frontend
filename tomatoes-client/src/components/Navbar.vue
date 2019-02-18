@@ -9,7 +9,7 @@
     <div class="collapse navbar-collapse" id="collapseMenu">
       <ul class="navbar-nav mr-auto">
 	<li v-if="currentUser" class="nav-item">
-	  <router-link @click.native="closeMenu($event)" class="btn nav-link" :to="{ name: 'MainPage' }"> Главня </router-link>
+	  <router-link @click.native="closeMenu($event)" class="btn nav-link" :to="{ name: 'MainPage' }"> Главная </router-link>
 	</li>
 	<li v-if="currentUser" class="nav-item">
 	  <router-link @click.native="closeMenu($event)" class="btn nav-link" to="/logout"> Выйти </router-link>

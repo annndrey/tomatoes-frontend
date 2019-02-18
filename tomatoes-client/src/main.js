@@ -33,3 +33,5 @@ new Vue({
     components: { App },
     template: '<App/>'
 })
+
+//window.appVue = new Vue({ router, store, render: (h) => h(App), }).$mount('#app');
