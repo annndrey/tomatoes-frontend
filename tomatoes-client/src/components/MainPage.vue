@@ -10,14 +10,20 @@
 
 	<form v-on:submit.prevent="uploadImages">
 	  <div class="input-group">
+	    
 	    <div class="input-group-prepend">
-	      <button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img src="@/assets/plus.svg"></button>
+	      <button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+	    </div>
+	    
+	    <div class="input-group-prepend">
+	      <button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="clearFields"><img height="13px" src="@/assets/trash.svg"></button>
 	    </div>
 
 	    <div class="custom-file">
 	      <input type="file" class="custom-file-input" @change="setFile" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
 	      <label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{fileMessage}}</label>
 	    </div>
+	    
 	  </div>
 	  <button class="btn btn-block btn-primary mt-2" type="submit">отправить</button>
 	</form>
