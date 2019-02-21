@@ -5,43 +5,49 @@
       <div class="col-sm-12">
 	
 	<p>
-	  <flash-message transition-name="fade"></flash-message> 
+
 	</p>
 
 	<form v-on:submit.prevent="uploadImages">
-	  <div class="input-group">
-	    
-	    <div class="input-group-prepend">
-	      <button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+	  <div class="form-row mb-3">
+	    <div class="col-md-12">
+	      <flash-message transition-name="fade"></flash-message>
 	    </div>
-	    
-	    <div class="input-group-prepend">
-	      <button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="clearFields"><img height="13px" src="@/assets/trash.svg"></button>
+	  </div>
+	  <div class="form-row mb-3" v-for="(row, index) in formRows">
+	    <div class="input-group" >
+	      
+	      <div class="input-group-prepend">
+		<button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+	      </div>
+	      
+	      <div class="input-group-prepend">
+		<button class="btn btn-outline-secondary" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
+	    </div>
+	      
+	      <div class="custom-file">
+		<input type="file" class="custom-file-input" @change="setFile($event, index)" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
+		<label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{row.fileMessage}}</label>
+	      </div>
 	    </div>
 
-	    <div class="custom-file">
-	      <input type="file" class="custom-file-input" @change="setFile" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
-	      <label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{fileMessage}}</label>
+	    <div class="col-md-12" v-if="row.imageURL">
+	      <div class="card">
+		<img  :src="row.imageURL" class="card-img-top" alt="Loaded Image">
+		<div class="card-body">
+		  <h5 class="card-title">{{row.fileMessage}}</h5>
+		  <p class="card-text">{{row.responseData}}</p>
+		</div>
+	      </div>
 	    </div>
-	    
+
 	  </div>
-	  <button class="btn btn-block btn-primary mt-2" type="submit">отправить</button>
+
+	  <button class="btn btn-block btn-primary mt-2" type="submit">Submit</button>
 	</form>
       </div>
     </div>
-
     
-    <div class="row" v-if="imageURL">
-      <div class="col-md-12">
-	<div class="card">
-	  <img  :src="imageURL" class="card-img-top" alt="Loaded Image">
-	  <div class="card-body">
-	    <h5 class="card-title">{{this.fileMessage}}</h5>
-	    <p class="card-text">{{this.responseData}}</p>
-	  </div>
-	</div>
-      </div>
-    </div>
   </div>
 </div>
 </template>
@@ -54,53 +60,69 @@ export default {
     name: 'MainPage',
     data: function() {
 	return {
-	    imageFile:"",
-	    responseData: "",
-	    imageURL: "",
-	    fileMessage: "Добавьте изображение"
-	}
+	    formRows: [{
+		imageFile:"",
+		responseData: "",
+		imageURL: "",
+		fileMessage: "Take a picture"
+	    }],
+ 	}
     },
     created () {
-	this.flashSuccess('welcome', {timeout: 2000})
+	//this.flashSuccess('welcome', {timeout: 2000})
     },
     computed: {
 	...mapGetters({ currentUser: 'currentUser'})
     },
     methods: {
-	setFile(e) {
-	    this.clearFields()
+	setFile(e, index) {
+	    // this.clearFields()
 	    let files = e.target.files || e.dataTransfer.files
 	    if (!files.length) {
 		return
 	    }
-	    this.imageFile = files[0]
-	    this.imageURL = URL.createObjectURL(this.imageFile)
-	    this.fileMessage = this.imageFile.name
+	    this.formRows[index].imageFile = files[0]
+	    this.formRows[index].imageURL = URL.createObjectURL(files[0])
+	    this.formRows[index].fileMessage = files[0].name
 	},
 	uploadImages() {
-	    console.log('uploading images11')
-	    this.flashSuccess('uploading files', {timeout: 2000})
-	    let formData = new FormData()
-	    formData.append('file', this.imageFile)
-	    this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {headers: {'Content-Type': 'multipart/form-data'}})
-	    .then(request => this.parseResponse(request))
-	    .catch(request => this.failedResponse(request))
+	    console.log('uploading images')
+	    for (const [index, value] of this.formRows.entries()) {
+		console.log(index, value)
+		let formData = new FormData()
+		formData.append('file', value.imageFile)
+		formData.append('index', index)
+		this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+		    .then(request => this.parseResponse(request))
+		    .catch(request => this.failedResponse(request))
+	    }
 	},
-	addFileUploadField () {
-	    console.log('add file upload field')
+	addFileUploadField() {
+	    this.formRows.push({
+		imageFile: "",
+		responseData:"",
+		imageURL:"",
+		fileMessage: "Take a picture"
+	    })
 	},
 	parseResponse(resp) {
-	    console.log(resp.data)
-	    this.responseData = resp.data
+	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 2000})
+	    let response = resp.data.response
+	    let index = resp.data.index
+	    this.formRows[index].responseData = response
 	},
 	failedResponse(resp) {
 	    console.log(resp)
 	},
-	clearFields() {
-	    this.imageFile = ""
-	    this.responseData = ""
-	    this.imageURL =  ""
-	    this.fileMessage =  "Добавьте изображение"
+	clearFields(index) {
+	    if (this.formRows.length > 1) {
+		this.formRows.splice(index, 1)
+	    } else {
+		this.formRows[index].imageFile = ""
+		this.formRows[index].responseData = ""
+		this.formRows[index].imageURL =  ""
+		this.formRows[index].fileMessage =  "Take a picture"
+	    }
 	}
     }
 
