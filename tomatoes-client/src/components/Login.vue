@@ -3,13 +3,13 @@
 
   <form class="form-signin" @submit.prevent="login">
 
-    <h2 class="form-signin-heading">Пожалуйста, авторизуйтесь </h2>
+    <h2 class="form-signin-heading">Login please </h2>
     <h4><flash-message transition-name="fade"></flash-message></h4>
-      <label for="inputEmail" class="sr-only">Эл. почта</label>
-      <input v-model="email" type="email" id="inputEmail" class="form-control" placeholder="Эл. почта" required autofocus>
-      <label for="inputPassword" class="sr-only">Пароль</label>
-      <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
+      <label for="inputEmail" class="sr-only">Email</label>
+      <input v-model="email" type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
     </form>
   </div>
 </template>
@@ -66,7 +66,7 @@ export default {
 	    
 	},
 	loginFailed (response) {
-	    this.error = ' неверный логин/пароль'
+	    this.error = ' wrong login or password'
 	    this.flashWarning(this.error, {timeout: 2000})
 	    this.$axios.defaults.headers.common.Authorization = `Bearer `
 	    delete localStorage.user
