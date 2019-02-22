@@ -1,9 +1,9 @@
 <template>
-<div class="login-wrapper border border-light">
+<div class="login-wrapper">
 
   <form class="form-signin" @submit.prevent="login">
 
-    <h2 class="form-signin-heading">Login please </h2>
+    <h2 class="form-signin-heading">Please login</h2>
     <h4><flash-message transition-name="fade"></flash-message></h4>
       <label for="inputEmail" class="sr-only">Email</label>
       <input v-model="email" type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
@@ -93,11 +93,11 @@ export default {
 
 <style scoped lang="css">
 body {
-    background: #605B56;
+    background: #b4b5b4;
 }
 
 .login-wrapper {
-    background: #fff;
+    background: #b4b5b4;
     width: 70%;
     margin: 12% auto;
 }

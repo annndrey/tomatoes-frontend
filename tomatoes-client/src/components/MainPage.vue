@@ -3,11 +3,6 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-12">
-	
-	<p>
-
-	</p>
-
 	<form v-on:submit.prevent="uploadImages">
 	  <div class="form-row mb-3">
 	    <div class="col-md-12">
@@ -64,7 +59,7 @@ export default {
 		imageFile:"",
 		responseData: "",
 		imageURL: "",
-		fileMessage: "Take a picture"
+		fileMessage: ""
 	    }],
  	}
     },
@@ -102,7 +97,7 @@ export default {
 		imageFile: "",
 		responseData:"",
 		imageURL:"",
-		fileMessage: "Take a picture"
+		fileMessage: ""
 	    })
 	},
 	parseResponse(resp) {
@@ -121,7 +116,7 @@ export default {
 		this.formRows[index].imageFile = ""
 		this.formRows[index].responseData = ""
 		this.formRows[index].imageURL =  ""
-		this.formRows[index].fileMessage =  "Take a picture"
+		this.formRows[index].fileMessage =  ""
 	    }
 	}
     }

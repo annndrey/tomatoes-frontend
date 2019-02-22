@@ -1,6 +1,6 @@
 <template>
-  <nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
-    <a class="navbar-brand" href="#">AI APP CLIENT</a>
+  <nav class="navbar navbar-expand-sm fixed-top navbar-light bg-light" style="background-color: #fbb040 !important;">
+    <a class="navbar-brand" href="#" style="color: rgba(0, 0, 0, 0.5);"><img src="@/assets/fermata_logo_wide.png" height="40px"></a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapseMenu" aria-controls="collapseMenu" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -20,7 +20,7 @@
       </ul>
       
       <span v-if="currentUser" class="navbar-text">
-	<span class="badge badge-primary">{{ currentUser.name }}</span>
+	<span class="badge" style="background-color: #b4b5b4 !important;">{{ currentUser.name }}</span>
       </span>
     </div>
   </nav>
@@ -42,10 +42,5 @@ export default {
 
 <style lang="scss" scoped>
 
-.btn-logout {
-  background-color: #837A75;
-  border-color: #837A75;
-  color: #fff;
-}
 
 </style>
