@@ -13,7 +13,7 @@
 	    <div class="input-group" >
 	      
 	      <div class="input-group-prepend">
-		<button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+		<button :disabled="formRows.length > 4" class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
 	      </div>
 	      
 	      <div class="input-group-prepend">
@@ -83,11 +83,10 @@ export default {
 	uploadImages() {
 	    console.log('uploading images')
 	    for (const [index, value] of this.formRows.entries()) {
-		console.log(index, value)
 		let formData = new FormData()
 		formData.append('file', value.imageFile)
 		formData.append('index', index)
-		this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+		this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
 		    .then(request => this.parseResponse(request))
 		    .catch(request => this.failedResponse(request))
 	    }
