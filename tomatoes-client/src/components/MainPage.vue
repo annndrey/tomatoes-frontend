@@ -59,7 +59,8 @@ export default {
 		imageFile:"",
 		responseData: "",
 		imageURL: "",
-		fileMessage: ""
+		fileMessage: "",
+		loading: false
 	    }],
  	}
     },
@@ -86,9 +87,15 @@ export default {
 		let formData = new FormData()
 		formData.append('file', value.imageFile)
 		formData.append('index', index)
+		this.loading = true
+		this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
 		this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
-		    .then(request => this.parseResponse(request))
-		    .catch(request => this.failedResponse(request))
+		    .then(request => { this.parseResponse(request)
+				       this.loading = false
+				     })
+		    .catch(request => {this.failedResponse(request)
+				       this.loading = false
+				      })
 	    }
 	},
 	addFileUploadField() {
@@ -100,7 +107,7 @@ export default {
 	    })
 	},
 	parseResponse(resp) {
-	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 2000})
+	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
 	    let response = resp.data.response
 	    let index = resp.data.index
 	    this.formRows[index].responseData = response
