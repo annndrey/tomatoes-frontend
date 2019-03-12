@@ -37,9 +37,9 @@
 	    </div>
 
 	  </div>
-
 	  <button class="btn btn-block btn-primary mt-2" type="submit">Submit</button>
 	</form>
+	<p v-if="loading"><img class="loading" src="@/assets/crone.png" height="40px"></p>
       </div>
     </div>
     
@@ -59,9 +59,9 @@ export default {
 		imageFile:"",
 		responseData: "",
 		imageURL: "",
-		fileMessage: "",
-		loading: false
+		fileMessage: ""
 	    }],
+	    loading: false
  	}
     },
     created () {
@@ -88,7 +88,7 @@ export default {
 		formData.append('file', value.imageFile)
 		formData.append('index', index)
 		this.loading = true
-		this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
+		// this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
 		this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
 		    .then(request => { this.parseResponse(request)
 				       this.loading = false
@@ -162,4 +162,16 @@ export default {
   a {
   color: #42b983;
   }
+  .loading {
+      position: fixed;
+      top: 50%;
+      left: 45%;
+      z-index: 30001;
+      -webkit-animation:spin 2s linear infinite;
+      -moz-animation:spin 2s linear infinite;
+      animation:spin 2s linear infinite;
+  }
+  @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+  @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+  @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 </style>
