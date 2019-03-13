@@ -31,13 +31,13 @@
 		<img  :src="row.imageURL" class="card-img-top" alt="Loaded Image">
 		<div class="card-body">
 		  <h5 class="card-title">{{row.fileMessage}}</h5>
-		  <p class="card-text">{{row.responseData}}</p>
+		  <p v-if="row.plantType" class="card-text">Plant Type: {{row.plantType}}<br>Plant Status: {{row.plantStatus}}</p>
 		</div>
 	      </div>
 	    </div>
 
 	  </div>
-	  <button class="btn btn-block btn-primary mt-2" type="submit">Submit</button>
+	  <button :disabled="loading" class="btn btn-block btn-primary mt-2" type="submit">Submit</button>
 	</form>
 	<p v-if="loading"><img class="loading" src="@/assets/crone.png" height="40px"></p>
       </div>
@@ -58,6 +58,8 @@ export default {
 	    formRows: [{
 		imageFile:"",
 		responseData: "",
+		plantType:"",
+		plantStatus:"",
 		imageURL: "",
 		fileMessage: ""
 	    }],
@@ -101,16 +103,19 @@ export default {
 	addFileUploadField() {
 	    this.formRows.push({
 		imageFile: "",
-		responseData:"",
+		plantType:"",
+		plantStatus:"",
 		imageURL:"",
 		fileMessage: ""
 	    })
 	},
 	parseResponse(resp) {
 	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
-	    let response = resp.data.response
+	    let planttype = resp.data.planttype
+	    let plantstatus = resp.data.plantstatus
 	    let index = resp.data.index
-	    this.formRows[index].responseData = response
+	    this.formRows[index].plantType = planttype
+	    this.formRows[index].plantStatus = plantstatus
 	},
 	failedResponse(resp) {
 	    console.log(resp)
@@ -120,7 +125,8 @@ export default {
 		this.formRows.splice(index, 1)
 	    } else {
 		this.formRows[index].imageFile = ""
-		this.formRows[index].responseData = ""
+		this.formRows[index].plantType = ""
+		this.formRows[index].plantStatus = ""
 		this.formRows[index].imageURL =  ""
 		this.formRows[index].fileMessage =  ""
 	    }
