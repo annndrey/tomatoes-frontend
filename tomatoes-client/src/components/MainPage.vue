@@ -13,7 +13,7 @@
 	    <div class="input-group" >
 	      
 	      <div class="input-group-prepend">
-		<button :disabled="formRows.length > 4" class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+		<button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
 	      </div>
 	      
 	      <div class="input-group-prepend">
@@ -28,7 +28,6 @@
 
 	    <div class="col-md-12" v-if="row.imageURL">
 	      <div class="card">
-		<!--<img  :src="row.imageURL" class="card-img-top" alt="Loaded Image">-->
 		<clipper-fixed :src="row.imageURL" preview="fixed-preview" :ref="'clipper'+index"></clipper-fixed>
 		<clipper-preview name="fixed-preview"></clipper-preview>
 		<div class="card-body">
