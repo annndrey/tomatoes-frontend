@@ -9,6 +9,7 @@ import axios from 'axios'
 import VueFlashMessage from 'vue-flash-message';
 import router from './router'
 import store from './store'
+import VuejsClipper from 'vuejs-clipper'
 
 Vue.config.productionTip = false
 // Setting up Axios on Vue Instance, for use via this.$axios
@@ -21,6 +22,12 @@ Vue.use(require('vue-moment'), {
     moment
 })
 Vue.use(VueFlashMessage, { timeout: 2000 });
+Vue.use(VuejsClipper, {
+　components: {
+    clipperFixed: true,
+    clipperPreview: true
+　}
+})
 
 //new Vue({
 //  render: function (h) { return h(App) },

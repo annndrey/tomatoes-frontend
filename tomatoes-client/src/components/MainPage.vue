@@ -28,7 +28,9 @@
 
 	    <div class="col-md-12" v-if="row.imageURL">
 	      <div class="card">
-		<img  :src="row.imageURL" class="card-img-top" alt="Loaded Image">
+		<!--<img  :src="row.imageURL" class="card-img-top" alt="Loaded Image">-->
+		<clipper-fixed :src="row.imageURL" preview="fixed-preview" :ref="'clipper'+index"></clipper-fixed>
+		<clipper-preview name="fixed-preview"></clipper-preview>
 		<div class="card-body">
 		  <h5 class="card-title">{{row.fileMessage}}</h5>
 		  <p v-if="row.plantType" class="card-text">Plant Type: {{row.plantType}}<br>Plant Status: {{row.plantStatus}}</p>
@@ -37,7 +39,7 @@
 	    </div>
 
 	  </div>
-	  <button :disabled="loading" class="btn btn-block btn-primary mt-2" type="submit">Submit</button>
+	  <button :disabled="loading" class="btn btn-block btn-primary mt-2 mb-5" type="submit">Submit</button>
 	</form>
 	<p v-if="loading"><img class="loading" src="@/assets/crone.png" height="40px"></p>
       </div>
@@ -73,6 +75,16 @@ export default {
 	...mapGetters({ currentUser: 'currentUser'})
     },
     methods: {
+	dataURLtoBlob(dataurl) {
+	    let arr = dataurl.split(',')
+	    let mime = arr[0].match(/:(.*?);/)[1]
+	    let bstr = atob(arr[1]), n = bstr.length
+	    let u8arr = new Uint8Array(n)
+	    while(n--){
+		u8arr[n] = bstr.charCodeAt(n);
+	    }
+	    return new Blob([u8arr], {type:mime});
+	},
 	setFile(e, index) {
 	    // this.clearFields()
 	    let files = e.target.files || e.dataTransfer.files
@@ -86,9 +98,15 @@ export default {
 	uploadImages() {
 	    console.log('uploading images')
 	    for (const [index, value] of this.formRows.entries()) {
+		let clipperID = 'clipper'+index
+		const clipper = this.$refs[clipperID][0]
+		const dataurl = clipper.clip().toDataURL("image/jpeg", 1)
+		var blob = this.dataURLtoBlob(dataurl)
+		
 		let formData = new FormData()
 		formData.append('file', value.imageFile)
 		formData.append('index', index)
+		formData.append('croppedfile', blob, 'cropped.jpg')
 		this.loading = true
 		// this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
 		this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
