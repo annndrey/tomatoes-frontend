@@ -28,8 +28,8 @@
 
 	    <div class="col-md-12" v-if="row.imageURL">
 	      <div class="card">
-		<clipper-fixed :src="row.imageURL" preview="fixed-preview" :ref="'clipper'+index"></clipper-fixed>
-		<clipper-preview name="fixed-preview"></clipper-preview>
+		<clipper-fixed :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index"></clipper-fixed>
+		<clipper-preview :name="'fixed-preview'+index"></clipper-preview>
 		<div class="card-body">
 		  <h5 class="card-title">{{row.fileMessage}}</h5>
 		  <p v-if="row.plantType" class="card-text">Plant Type: {{row.plantType}}<br>Plant Status: {{row.plantStatus}}</p>
