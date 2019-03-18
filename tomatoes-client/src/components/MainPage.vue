@@ -28,7 +28,7 @@
 
 	    <div class="col-md-12" v-if="row.imageURL">
 	      <div class="card">
-		<clipper-fixed :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index"></clipper-fixed>
+		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index"></clipper-basic>
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
 		<div class="card-body">
 		  <h5 class="card-title">{{row.fileMessage}}</h5>
