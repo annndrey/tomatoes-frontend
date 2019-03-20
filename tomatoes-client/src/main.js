@@ -25,7 +25,9 @@ Vue.use(VueFlashMessage, { timeout: 2000 });
 Vue.use(VuejsClipper, {
 　components: {
     clipperBasic: true,
-    clipperPreview: true
+    clipperFixed: true,
+    clipperPreview: true,
+    clipperUpload: true
 　}
 })
 

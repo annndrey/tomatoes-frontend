@@ -6,7 +6,7 @@
 	<form v-on:submit.prevent="uploadImages">
 	  <div class="form-row mb-3">
 	    <div class="col-md-12">
-	      <flash-message transition-name="fade"></flash-message>
+
 	    </div>
 	  </div>
 	  <div class="form-row mb-3" v-for="(row, index) in formRows">
@@ -28,7 +28,7 @@
 
 	    <div class="col-md-12" v-if="row.imageURL">
 	      <div class="card">
-		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index"></clipper-basic>
+		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
 		<div class="card-body">
 		  <h5 class="card-title">{{row.fileMessage}}</h5>
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import Pica from 'pica';
 import moment from 'moment'
 import { mapGetters } from 'vuex'
 
@@ -90,31 +91,48 @@ export default {
 	    if (!files.length) {
 		return
 	    }
+	    
 	    this.formRows[index].imageFile = files[0]
 	    this.formRows[index].imageURL = URL.createObjectURL(files[0])
 	    this.formRows[index].fileMessage = files[0].name
 	},
 	uploadImages() {
 	    for (const [index, value] of this.formRows.entries()) {
+		const pica = Pica()
 		let clipperID = 'clipper'+index
 		const clipper = this.$refs[clipperID][0]
-		const dataurl = clipper.clip().toDataURL("image/jpeg", 1)
-		var blob = this.dataURLtoBlob(dataurl)
+
+		let canvas = clipper.clip()
+		const dataurl = canvas.toDataURL("image/jpeg", 1)
+
+		//let blob = this.dataURLtoBlob(dataurl)
+		var newcanvas =  document.createElement('canvas')
+		newcanvas.height = canvas.height * 0.4
+		newcanvas.width = canvas.width * 0.4
 		
-		let formData = new FormData()
-		formData.append('filename', value.imageFile.name)
-		formData.append('index', index)
-		formData.append('croppedfile', blob, 'cropped.jpg')
-		this.loading = true
-		// this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
-		this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
-		    .then(request => { this.parseResponse(request)
-				       this.loading = false
-				     })
-		    .catch(request => {this.failedResponse(request)
-				       this.loading = false
-				      })
+		pica.resize(canvas, newcanvas)
+		    .then(result => pica.toBlob(result, 'image/jpeg', 0.90))
+		    .then(blob => this.sendImage(blob, value.imageFile.name, index));
+		//document.body.appendChild(newcanvas)
+		
 	    }
+	},
+	sendImage(blob, fname, index) {
+	    let formData = new FormData()
+	    formData.append('filename', fname)
+	    formData.append('index', index)
+	    formData.append('croppedfile', blob, 'cropped.jpg')
+	    //formData.append('croppedfile', value.imageFile) 
+	    this.loading = true
+	    // this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
+	    this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
+		.then(request => { this.parseResponse(request)
+				   this.loading = false
+				 })
+		.catch(request => {this.failedResponse(request)
+				   this.loading = false
+				  })
+	    
 	},
 	addFileUploadField() {
 	    this.formRows.push({
