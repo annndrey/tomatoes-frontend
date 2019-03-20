@@ -95,7 +95,6 @@ export default {
 	    this.formRows[index].fileMessage = files[0].name
 	},
 	uploadImages() {
-	    console.log('uploading images')
 	    for (const [index, value] of this.formRows.entries()) {
 		let clipperID = 'clipper'+index
 		const clipper = this.$refs[clipperID][0]
@@ -103,7 +102,7 @@ export default {
 		var blob = this.dataURLtoBlob(dataurl)
 		
 		let formData = new FormData()
-		formData.append('file', value.imageFile)
+		formData.append('filename', value.imageFile.name)
 		formData.append('index', index)
 		formData.append('croppedfile', blob, 'cropped.jpg')
 		this.loading = true
