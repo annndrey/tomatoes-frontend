@@ -125,7 +125,7 @@ export default {
 	    //formData.append('croppedfile', value.imageFile) 
 	    this.loading = true
 	    // this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
-	    this.$axios.post('http://trololo.info:5454/api/v1/loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
+	    this.$axios.post(this.$backendhost+'loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
 		.then(request => { this.parseResponse(request)
 				   this.loading = false
 				 })

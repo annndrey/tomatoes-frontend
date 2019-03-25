@@ -41,7 +41,6 @@ export default {
 	    } 
 	},
 	login () {
-	    console.log(this.$backendhost)
 	    this.$axios.post(this.$backendhost+'token', {username: this.email, password: this.password} )
 		.then(request => this.loginSuccessful(request))
 		.catch(request => this.loginFailed(request))
