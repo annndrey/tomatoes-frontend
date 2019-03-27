@@ -32,6 +32,7 @@
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
 		<div class="card-body">
 		  <h5 class="card-title">{{row.fileMessage}}</h5>
+		  <p v-if="row.pictType == 'Not a leaf'" class="card-text">Warning: This might not be a leaf</p>
 		  <p v-if="row.plantType" class="card-text">Plant Type: {{row.plantType}}<br>Plant Status: {{row.plantStatus}}</p>
 		</div>
 	      </div>
@@ -58,10 +59,11 @@ export default {
     data: function() {
 	return {
 	    formRows: [{
-		imageFile:"",
+		imageFile: "",
 		responseData: "",
-		plantType:"",
-		plantStatus:"",
+		plantType: "",
+		plantStatus: "",
+		pictType: "",
 		imageURL: "",
 		fileMessage: ""
 	    }],
@@ -137,19 +139,22 @@ export default {
 	addFileUploadField() {
 	    this.formRows.push({
 		imageFile: "",
-		plantType:"",
-		plantStatus:"",
-		imageURL:"",
+		plantType: "",
+		pictType: "",
+		plantStatus: "",
+		imageURL: "",
 		fileMessage: ""
 	    })
 	},
 	parseResponse(resp) {
 	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
+	    let picttype = resp.data.picttype
 	    let planttype = resp.data.planttype
 	    let plantstatus = resp.data.plantstatus
 	    let index = resp.data.index
 	    this.formRows[index].plantType = planttype
 	    this.formRows[index].plantStatus = plantstatus
+	    this.formRows[index].pictType = picttype
 	},
 	failedResponse(resp) {
 	    console.log(resp)
@@ -160,6 +165,7 @@ export default {
 	    } else {
 		this.formRows[index].imageFile = ""
 		this.formRows[index].plantType = ""
+		this.formRows[index].pictType = ""
 		this.formRows[index].plantStatus = ""
 		this.formRows[index].imageURL =  ""
 		this.formRows[index].fileMessage =  ""
