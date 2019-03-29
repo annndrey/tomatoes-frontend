@@ -1,50 +1,49 @@
 <template>
 <div class="mainpage">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-12">
-	<form v-on:submit.prevent="uploadImages">
-	  <div class="form-row mb-3">
-	    <div class="col-md-12">
-
+  <div class="container">
+    <form v-on:submit.prevent="uploadImages">
+      <div class="row mt-4 " v-for="(row, index) in formRows">
+	<div class="col">
+	
+	  <div class="row mt-4 ">
+	    <div class="col-5 ">
+		<button class="btn btn-outline-secondary float-left" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
 	    </div>
+	    <div class="col-7 ">
+	      <clipper-upload v-model="row.imageURL" >
+		<button class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"></button>
+	      </clipper-upload>
+	    </div>
+
 	  </div>
-	  <div class="form-row mb-3" v-for="(row, index) in formRows">
-	    <div class="input-group" >
-	      
-	      <div class="input-group-prepend">
-		<button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
-	      </div>
-	      
-	      <div class="input-group-prepend">
-		<button class="btn btn-outline-secondary" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
-	    </div>
-	      
-	      <div class="custom-file">
-		<input type="file" class="custom-file-input" @change="setFile($event, index)" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
-		<label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{row.fileMessage}}</label>
-	      </div>
-	    </div>
-
-	    <div class="col-md-12" v-if="row.imageURL">
-	      <div class="card">
+	  
+	  <div class="row mt-2">
+	    <div class="col">
+	      <!--<input type="file" class="custom-file-input" @change="setFile($event, index)" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
+		  <label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{row.fileName}}</label>-->
+	      <div class="card" v-if="row.imageURL">
 		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
-		<div class="card-body">
-		  <h5 class="card-title">{{row.fileMessage}}</h5>
+		<div class="card-body" v-if="row.plantStatus">
 		  <p v-if="row.pictType == 'Not a leaf'" class="card-text">Warning: This might not be a leaf</p>
 		  <p v-if="row.plantType" class="card-text">Plant Type: {{row.plantType}}<br>Plant Status: {{row.plantStatus}}</p>
 		</div>
 	      </div>
 	    </div>
-
 	  </div>
-	  <button :disabled="loading" class="btn btn-block btn-primary mt-2 mb-5" type="submit">Submit</button>
-	</form>
-	<p v-if="loading"><img class="loading" src="@/assets/crone.png" height="40px"></p>
+	  
+	</div>
       </div>
-    </div>
-    
+      
+      <div class="row">	
+	<div class="col-sm-12">
+	  <button :disabled="loading" class="btn btn-block btn-primary mt-2 mb-5" type="submit">Submit</button>
+	</div> 
+      </div>
+     
+    </form>
+    <p v-if="loading"><img class="loading" src="@/assets/crone.png" height="40px"></p>
   </div>
 </div>
 </template>
@@ -65,7 +64,7 @@ export default {
 		plantStatus: "",
 		pictType: "",
 		imageURL: "",
-		fileMessage: ""
+		fileName: ""
 	    }],
 	    loading: false
  	}
@@ -96,7 +95,7 @@ export default {
 	    
 	    this.formRows[index].imageFile = files[0]
 	    this.formRows[index].imageURL = URL.createObjectURL(files[0])
-	    this.formRows[index].fileMessage = files[0].name
+	    this.formRows[index].fileName = files[0].name
 	},
 	uploadImages() {
 	    for (const [index, value] of this.formRows.entries()) {
@@ -143,7 +142,7 @@ export default {
 		pictType: "",
 		plantStatus: "",
 		imageURL: "",
-		fileMessage: ""
+		fileName: ""
 	    })
 	},
 	parseResponse(resp) {
@@ -155,6 +154,7 @@ export default {
 	    this.formRows[index].plantType = planttype
 	    this.formRows[index].plantStatus = plantstatus
 	    this.formRows[index].pictType = picttype
+	    this.formRows[index].fileName = resp.data.filename
 	},
 	failedResponse(resp) {
 	    console.log(resp)
@@ -168,7 +168,7 @@ export default {
 		this.formRows[index].pictType = ""
 		this.formRows[index].plantStatus = ""
 		this.formRows[index].imageURL =  ""
-		this.formRows[index].fileMessage =  ""
+		this.formRows[index].fileName =  ""
 	    }
 	}
     }
