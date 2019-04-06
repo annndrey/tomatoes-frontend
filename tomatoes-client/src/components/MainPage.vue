@@ -26,8 +26,11 @@
 		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
 		<div class="card-body" v-if="row.plantStatus">
-		  <p v-if="row.pictType == 'Not a leaf'" class="card-text">Warning: This might not be a leaf</p>
-		  <p v-if="row.plantType" class="card-text">Plant Type: {{row.plantType}}<br>Plant Status: {{row.plantStatus}}</p>
+
+		  <p v-if="row.objType == 'non_plant'" class="card-text">Warning: This might not be a plant</p>
+		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">Warning: This might not be a leaf</p>
+		  <p v-if="row.objType == 'plant' && row.plantType == 'tomat'" class="card-text">Plant Type: Tomato<br>Plant Status: {{row.tomatoStatus == "tomat_non_health" ? "Not healthy" : "Healthy"}}</p>
+		  <p v-if="row.objType == 'plant' && row.plantType == 'non_tomat'" class="card-text">Plant Type: Not Tomato<br>Plant Status: {{row.plantStatus == "plants_non_healthy" ? "Not Healthy" : "Healthy"}}</p>
 		</div>
 	      </div>
 	    </div>
@@ -60,8 +63,10 @@ export default {
 	    formRows: [{
 		imageFile: "",
 		responseData: "",
+		objType: "",
 		plantType: "",
 		plantStatus: "",
+		tomatoStatus: "",
 		pictType: "",
 		imageURL: "",
 		fileName: ""
@@ -138,9 +143,11 @@ export default {
 	addFileUploadField() {
 	    this.formRows.push({
 		imageFile: "",
+		objType: "",
 		plantType: "",
 		pictType: "",
 		plantStatus: "",
+		tomatoStatus: "",
 		imageURL: "",
 		fileName: ""
 	    })
@@ -150,10 +157,15 @@ export default {
 	    let picttype = resp.data.picttype
 	    let planttype = resp.data.planttype
 	    let plantstatus = resp.data.plantstatus
+	    let objtype = resp.data.objtype
+	    let tomatostatus = resp.data.tomatostatus
+	    
 	    let index = resp.data.index
+	    this.formRows[index].objType = objtype
 	    this.formRows[index].plantType = planttype
 	    this.formRows[index].plantStatus = plantstatus
 	    this.formRows[index].pictType = picttype
+	    this.formRows[index].tomatoStatus = tomatostatus
 	    this.formRows[index].fileName = resp.data.filename
 	},
 	failedResponse(resp) {
@@ -165,8 +177,10 @@ export default {
 	    } else {
 		this.formRows[index].imageFile = ""
 		this.formRows[index].plantType = ""
+		this.formRows[index].objType = ""
 		this.formRows[index].pictType = ""
 		this.formRows[index].plantStatus = ""
+		this.formRows[index].tomatoStatus = ""
 		this.formRows[index].imageURL =  ""
 		this.formRows[index].fileName =  ""
 	    }
