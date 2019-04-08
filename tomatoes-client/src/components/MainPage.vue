@@ -6,13 +6,14 @@
 	<div class="col">
 	
 	  <div class="row mt-4 ">
+	    <span class="ml-3"><small>Upoad photo and select a leaf on it</small></span>
 	    <div class="col-5 ">
 		<button class="btn btn-outline-secondary float-left" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
 		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
 	    </div>
 	    <div class="col-7 ">
 	      <clipper-upload v-model="row.imageURL" >
-		<button class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"> Upoad photo and select a leaf on it</button>
+		<button class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"> </button>
 	      </clipper-upload>
 	    </div>
 
