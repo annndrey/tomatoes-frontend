@@ -6,9 +6,9 @@
     <h2 class="form-signin-heading">Please login</h2>
     <h4><flash-message transition-name="fade"></flash-message></h4>
       <label for="inputEmail" class="sr-only">Email</label>
-      <input v-model="email" type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+      <input v-model="email" type="email" id="inputEmail" class="form-control" aria-describedby="emailHelp" placeholder="Email" required autofocus>
       <label for="inputPassword" class="sr-only">Password</label>
-      <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+      <input v-model="password" type="password" id="inputPassword" class="form-control" aria-describedby="passwordHelp" placeholder="Password" required>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
     </form>
   </div>
@@ -20,8 +20,8 @@ export default {
     name: 'Login',
     data () {
 	return {
-	    email: '',
-	    password: '',
+	    email: 'demouser@fermata.tech',
+	    password: 'demopassword',
 	    error: ''
 	}
     },
