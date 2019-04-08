@@ -27,7 +27,7 @@
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
 		<div class="card-body" v-if="row.plantStatus">
 
-		  <p v-if="row.objType == 'non_plant'" class="card-text">Warning: This might not be a plant</p>
+		  <p v-if="row.objType == 'non_plant'" class="card-text">Warning: This might not be a leaf</p>
 		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">Warning: This might not be a leaf</p>
 		  <p v-if="row.objType == 'plant' && row.plantType == 'tomat'" class="card-text">Plant Type: Tomato<br>Plant Status: {{row.tomatoStatus == "tomat_non_health" ? "Not healthy" : "Healthy"}}</p>
 		  <p v-if="row.objType == 'plant' && row.plantType == 'non_tomat'" class="card-text">Plant Type: Not Tomato<br>Plant Status: {{row.plantStatus == "plants_non_healthy" ? "Not Healthy" : "Healthy"}}</p>

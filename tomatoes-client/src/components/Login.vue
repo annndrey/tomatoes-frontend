@@ -20,8 +20,8 @@ export default {
     name: 'Login',
     data () {
 	return {
-	    email: '',
-	    password: '',
+	    email: 'demouser@fermata.tech',
+	    password: 'demopass',
 	    error: ''
 	}
     },
