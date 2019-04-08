@@ -4,9 +4,12 @@
     <form v-on:submit.prevent="uploadImages">
       <div class="row mt-4 " v-for="(row, index) in formRows">
 	<div class="col">
-	
-	  <div class="row mt-4 ">
-	    <span class="ml-3"><small>Upoad photo and select a leaf on it</small></span>
+	  <div class="row mt-4">
+	    <div class="col-12">
+	      <span class="float-right ml-3"><small>Upoad photo and select a leaf on it</small></span>
+	    </div>
+	  </div>
+	  <div class="row ">
 	    <div class="col-5 ">
 		<button class="btn btn-outline-secondary float-left" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
 		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
