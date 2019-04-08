@@ -12,7 +12,7 @@
 	    </div>
 	    <div class="col-7 ">
 	      <clipper-upload v-model="row.imageURL" >
-		<button class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"></button>
+		<button class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"> Upoad photo and select a leaf on it</button>
 	      </clipper-upload>
 	    </div>
 
