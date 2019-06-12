@@ -16,12 +16,15 @@
     "vue-flash-message": "^0.7.2",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.2",
+    "vueify": "^9.4.1",
     "vuejs-clipper": "^0.2.9",
     "vuex": "^3.1.0"
   },
   "devDependencies": {
     "@vue/cli-service": "^3.0.5",
-    "vue-template-compiler": "^2.5.21"
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "vue-template-compiler": "^2.6.10"
   },
   "postcss": {
     "plugins": {

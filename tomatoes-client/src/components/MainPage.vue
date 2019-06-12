@@ -119,7 +119,7 @@ export default {
 		var newcanvas =  document.createElement('canvas')
 		newcanvas.height = canvas.height * 0.4
 		newcanvas.width = canvas.width * 0.4
-		
+		console.log('010101')
 		pica.resize(canvas, newcanvas)
 		    .then(result => pica.toBlob(result, 'image/jpeg', 0.90))
 		    .then(blob => this.sendImage(blob, value.imageFile.name, index));
