@@ -24,17 +24,12 @@
 	  
 	  <div class="row mt-2">
 	    <div class="col">
-	      <!--<input type="file" class="custom-file-input" @change="setFile($event, index)" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
-		  <label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{row.fileName}}</label>-->
 	      <div class="card" v-if="row.imageURL">
 		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
-		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
-		<div class="card-body" v-if="row.plantStatus">
-
-		  <p v-if="row.objType == 'non_plant'" class="card-text">Warning: This might not be a leaf</p>
-		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">Warning: This might not be a leaf</p>
-		  <p v-if="row.objType == 'plant' && row.plantType == 'tomat'" class="card-text">Plant Type: Tomato<br>Plant Status: {{row.tomatoStatus == "tomat_non_health" ? "Not healthy" : "Healthy"}}</p>
-		  <p v-if="row.objType == 'plant' && row.plantType == 'non_tomat'" class="card-text">Plant Type: Not Tomato<br>Plant Status: {{row.plantStatus == "plants_non_healthy" ? "Not Healthy" : "Healthy"}}</p>
+		<div class="card-body" v-if="row.objType">
+		  <p v-if="row.objType == 'non_plant'" class="card-text">It seems to be not a plant</p>
+		  <p v-if="row.objType == 'plant' && row.diseaseType == 'potat_fitoftor'" class="card-text">Phytophthora (late blight)</p>
+		  <p v-if="row.objType == 'plant' && row.diseaseType == 'potat_nonfitoftor'" class="card-text">It's not a phytophthora (late blight)</p>
 		</div>
 	      </div>
 	    </div>
@@ -68,10 +63,7 @@ export default {
 		imageFile: "",
 		responseData: "",
 		objType: "",
-		plantType: "",
-		plantStatus: "",
-		tomatoStatus: "",
-		pictType: "",
+		diseaseType: "",
 		imageURL: "",
 		fileName: ""
 	    }],
@@ -148,28 +140,19 @@ export default {
 	    this.formRows.push({
 		imageFile: "",
 		objType: "",
-		plantType: "",
-		pictType: "",
-		plantStatus: "",
-		tomatoStatus: "",
+		diseaseType: "",
 		imageURL: "",
 		fileName: ""
 	    })
 	},
 	parseResponse(resp) {
 	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
-	    let picttype = resp.data.picttype
-	    let planttype = resp.data.planttype
-	    let plantstatus = resp.data.plantstatus
+	    console.log(resp.data)
+	    let fito_status = resp.data.fito_status
 	    let objtype = resp.data.objtype
-	    let tomatostatus = resp.data.tomatostatus
-	    
 	    let index = resp.data.index
 	    this.formRows[index].objType = objtype
-	    this.formRows[index].plantType = planttype
-	    this.formRows[index].plantStatus = plantstatus
-	    this.formRows[index].pictType = picttype
-	    this.formRows[index].tomatoStatus = tomatostatus
+	    this.formRows[index].diseaseType = fito_status
 	    this.formRows[index].fileName = resp.data.filename
 	},
 	failedResponse(resp) {
@@ -180,11 +163,8 @@ export default {
 		this.formRows.splice(index, 1)
 	    } else {
 		this.formRows[index].imageFile = ""
-		this.formRows[index].plantType = ""
 		this.formRows[index].objType = ""
-		this.formRows[index].pictType = ""
-		this.formRows[index].plantStatus = ""
-		this.formRows[index].tomatoStatus = ""
+		this.formRows[index].diseaseType = ""
 		this.formRows[index].imageURL =  ""
 		this.formRows[index].fileName =  ""
 	    }
