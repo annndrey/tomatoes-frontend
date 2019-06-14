@@ -1,6 +1,7 @@
 <template>
 <div class="mainpage">
   <div class="container">
+    <h4><flash-message transition-name="fade"></flash-message></h4>
     <form v-on:submit.prevent="uploadImages">
       <div class="row mt-4 " v-for="(row, index) in formRows">
 	<div class="col">
@@ -156,7 +157,9 @@ export default {
 	    this.formRows[index].fileName = resp.data.filename
 	},
 	failedResponse(resp) {
-	    console.log(resp)
+	    if (!resp.response) {
+                this.flashWarning('Network error, server not responding', {timeout: 2000})
+            }
 	},
 	clearFields(index) {
 	    if (this.formRows.length > 1) {
