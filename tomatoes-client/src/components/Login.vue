@@ -67,12 +67,10 @@ export default {
 	    
 	},
 	loginFailed (response) {
-	    console.log(response.response.status)
-	    if (false) {
+	    if (!response.response) {
 		this.error = ' Network error, server not responding'
 		this.flashWarning(this.error, {timeout: 2000})
 	    } else {
-		console.log(response.response.status)
 		this.error = ' Wrong login or password'
 		this.flashWarning(this.error, {timeout: 2000})
 		this.$axios.defaults.headers.common.Authorization = `Bearer `

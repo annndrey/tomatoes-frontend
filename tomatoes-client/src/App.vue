@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="other">
   <navbar></navbar>
   <div class="container-fluid">
     <router-view></router-view>
@@ -15,7 +15,7 @@ import Foot from '@/components/Foot'
 import { mapGetters } from 'vuex'
 
 export default {
-    name: 'app',
+    name: 'other',
     computed: {
 	...mapGetters({ currentUser: 'currentUser' })
     },
@@ -42,7 +42,7 @@ export default {
 </script>
 
 <style>
-#app {
+#other {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
