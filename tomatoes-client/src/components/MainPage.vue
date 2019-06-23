@@ -142,16 +142,18 @@ export default {
 	    
 	},
 	addFileUploadField() {
-	    this.formRows.push({
-		imageFile: "",
-		objType: "",
-		plantType: "",
-		pictType: "",
-		plantStatus: "",
-		tomatoStatus: "",
-		imageURL: "",
-		fileName: ""
-	    })
+	    if (this.formRows.length < 3) {
+		this.formRows.push({
+		    imageFile: "",
+		    objType: "",
+		    plantType: "",
+		    pictType: "",
+		    plantStatus: "",
+		    tomatoStatus: "",
+		    imageURL: "",
+		    fileName: ""
+		})
+	    }
 	},
 	parseResponse(resp) {
 	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
