@@ -136,7 +136,7 @@ export default {
 		.then(request => { this.parseResponse(request)
 				   this.loading = false
 				 })
-		.catch(request => {this.failedResponse(request)
+		.catch(error => {this.failedResponse(error)
 				   this.loading = false
 				  })
 	    
@@ -156,7 +156,8 @@ export default {
 	    }
 	},
 	parseResponse(resp) {
-	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
+	    //this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
+	    this.flashSuccess('File successfully parsed', {timeout: 5000})
 	    let picttype = resp.data.picttype
 	    let planttype = resp.data.planttype
 	    let plantstatus = resp.data.plantstatus
@@ -171,8 +172,12 @@ export default {
 	    this.formRows[index].tomatoStatus = tomatostatus
 	    this.formRows[index].fileName = resp.data.filename
 	},
-	failedResponse(resp) {
-	    if (!resp.response) {
+	failedResponse(error) {
+	    console.log(error.response.status)
+	    if (error.response.status == 429) {
+		this.flashWarning('Too many requests, try again in a few minutes', {timeout: 2000})
+	    }
+	    if (!error.response) {
 		this.flashWarning('Network error, server not responding', {timeout: 2000})
 	    }
 	},
