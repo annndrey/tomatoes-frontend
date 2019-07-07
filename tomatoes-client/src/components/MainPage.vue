@@ -2,6 +2,7 @@
 <div class="mainpage">
   <div class="container">
     <h4><flash-message transition-name="fade"></flash-message></h4>
+    <h5>Classificators: tomato/not tomato, healthy/unhealthy v.1.0<h5>
     <form v-on:submit.prevent="uploadImages">
       <div class="row mt-4 " v-for="(row, index) in formRows">
 	<div class="col">
@@ -28,8 +29,8 @@
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
 		<div class="card-body" v-if="row.plantStatus">
 
-		  <p v-if="row.objType == 'non_plant'" class="card-text">Warning: This might not be a leaf</p>
-		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">Warning: This might not be a leaf</p>
+		  <p v-if="row.objType == 'non_plant'" class="card-text">This is not a plant. Download a plant and seletct a leaf on it.</p>
+		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">The selection is not not a leaf, answer may be inaccurate. Select a leaf.</p>
 		  <p v-if="row.objType == 'plant' && row.plantType == 'tomat'" class="card-text">Plant Type: Tomato<br>Plant Status: {{row.tomatoStatus == "tomat_non_health" ? "Not healthy" : "Healthy"}}</p>
 		  <p v-if="row.objType == 'plant' && row.plantType == 'non_tomat'" class="card-text">Plant Type: Not Tomato<br>Plant Status: {{row.plantStatus == "plants_non_healthy" ? "Not Healthy" : "Healthy"}}</p>
 		</div>
