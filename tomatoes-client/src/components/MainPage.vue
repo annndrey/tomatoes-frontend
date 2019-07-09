@@ -2,7 +2,8 @@
 <div class="mainpage">
   <div class="container">
     <h4><flash-message transition-name="fade"></flash-message></h4>
-    <h5>Classificators: tomato/not tomato, healthy/unhealthy v.1.0<h5>
+    <h6>Classifiers version 1.0: tomato/not-tomato, healthy/unhealthy</h6>
+    <h6>Upload image of a plant and select a leaf on it.</h6>
     <form v-on:submit.prevent="uploadImages">
       <div class="row mt-4 " v-for="(row, index) in formRows">
 	<div class="col">
@@ -13,8 +14,8 @@
 		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
 	    </div>
 	    <div class="col-7 ">
-	      <clipper-upload v-model="row.imageURL" >
-		<button class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"></button>
+	      <clipper-upload v-model="row.imageURL">
+		<button v-on:click="clearFields(index)" class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"></button>
 	      </clipper-upload>
 	    </div>
 
@@ -29,8 +30,8 @@
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
 		<div class="card-body" v-if="row.plantStatus">
 
-		  <p v-if="row.objType == 'non_plant'" class="card-text">This is not a plant. Download a plant and seletct a leaf on it.</p>
-		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">The selection is not not a leaf, answer may be inaccurate. Select a leaf.</p>
+		  <p v-if="row.objType == 'non_plant'" class="card-text">The selection is not a plant. Upload image of a plant and select a leaf on it.</p>
+		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">The selection is not a single leaf, the answer may be inaccurate. Please, select a leaf.</p>
 		  <p v-if="row.objType == 'plant' && row.plantType == 'tomat'" class="card-text">Plant Type: Tomato<br>Plant Status: {{row.tomatoStatus == "tomat_non_health" ? "Not healthy" : "Healthy"}}</p>
 		  <p v-if="row.objType == 'plant' && row.plantType == 'non_tomat'" class="card-text">Plant Type: Not Tomato<br>Plant Status: {{row.plantStatus == "plants_non_healthy" ? "Not Healthy" : "Healthy"}}</p>
 		</div>
@@ -94,7 +95,7 @@ export default {
 	    return new Blob([u8arr], {type:mime});
 	},
 	setFile(e, index) {
-	    // this.clearFields()
+	    this.clearFields(index)
 	    let files = e.target.files || e.dataTransfer.files
 	    if (!files.length) {
 		return
@@ -183,18 +184,19 @@ export default {
 	    }
 	},
 	clearFields(index) {
-	    if (this.formRows.length > 1) {
-		this.formRows.splice(index, 1)
-	    } else {
-		this.formRows[index].imageFile = ""
-		this.formRows[index].plantType = ""
-		this.formRows[index].objType = ""
-		this.formRows[index].pictType = ""
-		this.formRows[index].plantStatus = ""
-		this.formRows[index].tomatoStatus = ""
-		this.formRows[index].imageURL =  ""
-		this.formRows[index].fileName =  ""
-	    }
+	    console.log("Clear fields")
+	    //if (this.formRows.length > 1) {
+	    //this.formRows.splice(index, 1)
+	    //} else {
+	    //this.formRows[index].imageFile = ""
+	    this.formRows[index].plantType = ""
+	    this.formRows[index].objType = ""
+	    this.formRows[index].pictType = ""
+	    this.formRows[index].plantStatus = ""
+	    this.formRows[index].tomatoStatus = ""
+	    //this.formRows[index].imageURL =  ""
+	    //this.formRows[index].fileName =  ""
+	    //}
 	}
     }
 
