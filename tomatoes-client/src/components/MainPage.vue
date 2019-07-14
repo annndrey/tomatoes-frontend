@@ -142,6 +142,7 @@ export default {
 	    this.$axios.post(this.$backendhost+'loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
 		.then(request => { this.parseResponse(request)
 				   this.loading = false
+				   this.submitButtonText = "Submit"
 				 })
 		.catch(error => {this.failedResponse(error)
 				   this.loading = false
