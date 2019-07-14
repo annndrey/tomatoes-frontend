@@ -11,7 +11,7 @@
 	  <div class="row mt-4 ">
 	    <div class="col-5 ">
 		<button class="btn btn-outline-secondary float-left" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
-		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
+		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="deleteRow(index)"><img height="13px" src="@/assets/trash.svg"></button>
 	    </div>
 	    <div class="col-7 ">
 	      <clipper-upload v-model="row.imageURL">
@@ -44,7 +44,7 @@
       
       <div class="row">	
 	<div class="col-sm-12">
-	  <button :disabled="loading" class="btn btn-block btn-primary mt-2 mb-5" type="submit">Submit</button>
+	  <button :disabled="loading" class="btn btn-block btn-primary mt-2 mb-5" type="submit">{{this.submitButtonText}}</button>
 	</div> 
       </div>
      
@@ -74,7 +74,8 @@ export default {
 		imageURL: "",
 		fileName: ""
 	    }],
-	    loading: false
+	    loading: false,
+	    submitButtonText: "Submit",
  	}
     },
     created () {
@@ -121,7 +122,11 @@ export default {
 		
 		pica.resize(canvas, newcanvas)
 		    .then(result => pica.toBlob(result, 'image/jpeg', 0.90))
-		    .then(blob => this.sendImage(blob, value.imageFile.name, index));
+		    .then(blob => {this.sendImage(blob, value.imageFile.name, index)
+				   this.clearFields(index)
+				  }
+			 )
+		
 		//document.body.appendChild(newcanvas)
 		
 	    }
@@ -177,26 +182,30 @@ export default {
 	failedResponse(error) {
 	    console.log(error.response.status)
 	    if (error.response.status == 429) {
+		this.submitButtonText = 'Too many requests, try again in a few minutes'
 		this.flashWarning('Too many requests, try again in a few minutes', {timeout: 2000})
 	    }
 	    if (!error.response) {
 		this.flashWarning('Network error, server not responding', {timeout: 2000})
 	    }
 	},
+	deleteRow(index) {
+	    this.clearFields(index)
+	    if (this.formRows.length > 1) {
+		this.formRows.splice(index, 1)
+	    } else {
+		this.formRows[index].imageFile = ""
+		this.formRows[index].imageURL =  ""
+		this.formRows[index].fileName =  ""
+	    }
+	},
 	clearFields(index) {
 	    console.log("Clear fields")
-	    //if (this.formRows.length > 1) {
-	    //this.formRows.splice(index, 1)
-	    //} else {
-	    //this.formRows[index].imageFile = ""
 	    this.formRows[index].plantType = ""
 	    this.formRows[index].objType = ""
 	    this.formRows[index].pictType = ""
 	    this.formRows[index].plantStatus = ""
 	    this.formRows[index].tomatoStatus = ""
-	    //this.formRows[index].imageURL =  ""
-	    //this.formRows[index].fileName =  ""
-	    //}
 	}
     }
 
