@@ -183,7 +183,7 @@ export default {
 	failedResponse(error) {
 	    console.log(error.response.status)
 	    if (error.response.status == 429) {
-		this.submitButtonText = 'Too many requests, try again in a few minutes'
+		this.submitButtonText = 'Try again in a few minutes, max allowed 10 submits in 10 minutes reached'
 		this.flashWarning('Too many requests, try again in a few minutes', {timeout: 2000})
 	    }
 	    if (!error.response) {
