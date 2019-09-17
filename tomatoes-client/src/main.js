@@ -15,7 +15,7 @@ Vue.config.productionTip = false
 // Setting up Axios on Vue Instance, for use via this.$axios
 Vue.prototype.$axios = axios.create(axiosConfig);
 Vue.prototype.$axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`;
-Vue.prototype.$backendhost = 'https://leaves.fermata.tech:5498/api/v1/'
+Vue.prototype.$backendhost = 'https://cityfarmer.fermata.tech:5444/api/v1/'
 
 const moment = require('moment')
 require('moment/locale/ru')
