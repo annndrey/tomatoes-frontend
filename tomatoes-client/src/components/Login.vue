@@ -20,8 +20,8 @@ export default {
     name: 'Login',
     data () {
 	return {
-	    email: '',
-	    password: '',
+	    email: 'demouser@fermata.tech',
+	    password: 'demopass',
 	    error: ''
 	}
     },
@@ -67,12 +67,17 @@ export default {
 	    
 	},
 	loginFailed (response) {
-	    this.error = ' wrong login or password'
-	    this.flashWarning(this.error, {timeout: 2000})
-	    this.$axios.defaults.headers.common.Authorization = `Bearer `
-	    delete localStorage.user
-	    delete localStorage.token
-	    this.$store.dispatch('logout')
+	    if (!response.response) {
+		this.error = ' Network error, server not responding'
+		this.flashWarning(this.error, {timeout: 2000})
+	    } else {
+		this.error = ' Wrong login or password'
+		this.flashWarning(this.error, {timeout: 2000})
+		this.$axios.defaults.headers.common.Authorization = `Bearer `
+		delete localStorage.user
+		delete localStorage.token
+		this.$store.dispatch('logout')
+	    }
 	}
     }
 }
