@@ -1,49 +1,55 @@
 <template>
 <div class="mainpage">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-12">
-	<form v-on:submit.prevent="uploadImages">
-	  <div class="form-row mb-3">
-	    <div class="col-md-12">
-
+  <div class="container">
+    <h4><flash-message transition-name="fade"></flash-message></h4>
+    <h6>Classifiers version 1.0: tomato/not-tomato, healthy/unhealthy</h6>
+    <h6>Upload image of a plant and select a leaf on it.</h6>
+    <form v-on:submit.prevent="uploadImages">
+      <div class="row mt-4 " v-for="(row, index) in formRows">
+	<div class="col">
+	
+	  <div class="row mt-4 ">
+	    <div class="col-5 ">
+		<button class="btn btn-outline-secondary float-left" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="deleteRow(index)"><img height="13px" src="@/assets/trash.svg"></button>
 	    </div>
+	    <div class="col-7 ">
+	      <clipper-upload v-model="row.imageURL">
+		<button v-on:click="clearFields(index)" class="btn btn-outline-secondary" style="width:100%" type="button"><img height="16px" src="@/assets/aperture.svg"></button>
+	      </clipper-upload>
+	    </div>
+
 	  </div>
-	  <div class="form-row mb-3" v-for="(row, index) in formRows">
-	    <div class="input-group" >
-	      
-	      <div class="input-group-prepend">
-		<button class="btn btn-outline-secondary" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
-	      </div>
-	      
-	      <div class="input-group-prepend">
-		<button class="btn btn-outline-secondary" type="button" id="inputDeleteInput" @click="clearFields(index)"><img height="13px" src="@/assets/trash.svg"></button>
-	    </div>
-	      
-	      <div class="custom-file">
-		<input type="file" class="custom-file-input" @change="setFile($event, index)" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
-		<label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{row.fileMessage}}</label>
-	      </div>
-	    </div>
-
-	    <div class="col-md-12" v-if="row.imageURL">
-	      <div class="card">
+	  
+	  <div class="row mt-2">
+	    <div class="col">
+	      <!--<input type="file" class="custom-file-input" @change="setFile($event, index)" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
+		  <label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{row.fileName}}</label>-->
+	      <div class="card" v-if="row.imageURL">
 		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
 		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
-		<div class="card-body">
-		  <h5 class="card-title">{{row.fileMessage}}</h5>
-		  <p v-if="row.plantType" class="card-text">Plant Type: {{row.plantType}}<br>Plant Status: {{row.plantStatus}}</p>
+		<div class="card-body" v-if="row.plantStatus">
+
+		  <p v-if="row.objType == 'non_plant'" class="card-text">The selection is not a plant. Upload image of a plant and select a leaf on it.</p>
+		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">The selection is not a single leaf, the answer may be inaccurate. Please, select a leaf.</p>
+		  <p v-if="row.objType == 'plant' && row.plantType == 'tomat'" class="card-text">Plant Type: Tomato<br>Plant Status: {{row.tomatoStatus == "tomat_non_health" ? "Not healthy" : "Healthy"}}</p>
+		  <p v-if="row.objType == 'plant' && row.plantType == 'non_tomat'" class="card-text">Plant Type: Not Tomato<br>Plant Status: {{row.plantStatus == "plants_non_healthy" ? "Not Healthy" : "Healthy"}}</p>
 		</div>
 	      </div>
 	    </div>
-
 	  </div>
-	  <button :disabled="loading" class="btn btn-block btn-primary mt-2 mb-5" type="submit">Submit</button>
-	</form>
-	<p v-if="loading"><img class="loading" src="@/assets/crone.png" height="40px"></p>
+	  
+	</div>
       </div>
-    </div>
-    
+      
+      <div class="row">	
+	<div class="col-sm-12">
+	  <button :disabled="loading" class="btn btn-block btn-primary mt-2 mb-5" type="submit">{{this.submitButtonText}}</button>
+	</div> 
+      </div>
+     
+    </form>
+    <p v-if="loading"><img class="loading" src="@/assets/crone.png" height="40px"></p>
   </div>
 </div>
 </template>
@@ -58,14 +64,18 @@ export default {
     data: function() {
 	return {
 	    formRows: [{
-		imageFile:"",
+		imageFile: "",
 		responseData: "",
-		plantType:"",
-		plantStatus:"",
+		objType: "",
+		plantType: "",
+		plantStatus: "",
+		tomatoStatus: "",
+		pictType: "",
 		imageURL: "",
-		fileMessage: ""
+		fileName: ""
 	    }],
-	    loading: false
+	    loading: false,
+	    submitButtonText: "Submit",
  	}
     },
     created () {
@@ -86,7 +96,7 @@ export default {
 	    return new Blob([u8arr], {type:mime});
 	},
 	setFile(e, index) {
-	    // this.clearFields()
+	    this.clearFields(index)
 	    let files = e.target.files || e.dataTransfer.files
 	    if (!files.length) {
 		return
@@ -94,7 +104,7 @@ export default {
 	    
 	    this.formRows[index].imageFile = files[0]
 	    this.formRows[index].imageURL = URL.createObjectURL(files[0])
-	    this.formRows[index].fileMessage = files[0].name
+	    this.formRows[index].fileName = files[0].name
 	},
 	uploadImages() {
 	    for (const [index, value] of this.formRows.entries()) {
@@ -112,7 +122,11 @@ export default {
 		
 		pica.resize(canvas, newcanvas)
 		    .then(result => pica.toBlob(result, 'image/jpeg', 0.90))
-		    .then(blob => this.sendImage(blob, value.imageFile.name, index));
+		    .then(blob => {this.sendImage(blob, value.imageFile.name, index)
+				   this.clearFields(index)
+				  }
+			 )
+		
 		//document.body.appendChild(newcanvas)
 		
 	    }
@@ -128,42 +142,71 @@ export default {
 	    this.$axios.post(this.$backendhost+'loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
 		.then(request => { this.parseResponse(request)
 				   this.loading = false
+				   this.submitButtonText = "Submit"
 				 })
-		.catch(request => {this.failedResponse(request)
+		.catch(error => {this.failedResponse(error)
 				   this.loading = false
 				  })
 	    
 	},
 	addFileUploadField() {
-	    this.formRows.push({
-		imageFile: "",
-		plantType:"",
-		plantStatus:"",
-		imageURL:"",
-		fileMessage: ""
-	    })
+	    if (this.formRows.length < 3) {
+		this.formRows.push({
+		    imageFile: "",
+		    objType: "",
+		    plantType: "",
+		    pictType: "",
+		    plantStatus: "",
+		    tomatoStatus: "",
+		    imageURL: "",
+		    fileName: ""
+		})
+	    }
 	},
 	parseResponse(resp) {
-	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
+	    //this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
+	    this.flashSuccess('File successfully parsed', {timeout: 5000})
+	    let picttype = resp.data.picttype
 	    let planttype = resp.data.planttype
 	    let plantstatus = resp.data.plantstatus
+	    let objtype = resp.data.objtype
+	    let tomatostatus = resp.data.tomatostatus
+	    
 	    let index = resp.data.index
+	    this.formRows[index].objType = objtype
 	    this.formRows[index].plantType = planttype
 	    this.formRows[index].plantStatus = plantstatus
+	    this.formRows[index].pictType = picttype
+	    this.formRows[index].tomatoStatus = tomatostatus
+	    this.formRows[index].fileName = resp.data.filename
 	},
-	failedResponse(resp) {
-	    console.log(resp)
+	failedResponse(error) {
+	    console.log(error.response.status)
+	    if (error.response.status == 429) {
+		this.submitButtonText = 'Try again in a few minutes, max allowed 10 submits in 10 minutes reached'
+		this.flashWarning('Too many requests, try again in a few minutes', {timeout: 2000})
+	    }
+	    if (!error.response) {
+		this.flashWarning('Network error, server not responding', {timeout: 2000})
+	    }
 	},
-	clearFields(index) {
+	deleteRow(index) {
+	    this.clearFields(index)
 	    if (this.formRows.length > 1) {
 		this.formRows.splice(index, 1)
 	    } else {
 		this.formRows[index].imageFile = ""
-		this.formRows[index].plantType = ""
-		this.formRows[index].plantStatus = ""
 		this.formRows[index].imageURL =  ""
-		this.formRows[index].fileMessage =  ""
+		this.formRows[index].fileName =  ""
 	    }
+	},
+	clearFields(index) {
+	    console.log("Clear fields")
+	    this.formRows[index].plantType = ""
+	    this.formRows[index].objType = ""
+	    this.formRows[index].pictType = ""
+	    this.formRows[index].plantStatus = ""
+	    this.formRows[index].tomatoStatus = ""
 	}
     }
 
