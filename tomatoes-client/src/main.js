@@ -16,7 +16,7 @@ Vue.config.productionTip = false
 Vue.prototype.$axios = axios.create(axiosConfig);
 Vue.prototype.$axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`;
 Vue.prototype.$axios.defaults.timeout = 5000;
-Vue.prototype.$backendhost = 'https://api.fermata.tech:5454/api/v1/'
+Vue.prototype.$backendhost = 'https://leaves.fermata.tech:5498/api/v1/'
 
 const moment = require('moment')
 require('moment/locale/ru')
