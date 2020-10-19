@@ -1,6 +1,6 @@
 <template>
 <div class="mainpage">
-  <div class="container">
+  <div class="container mt-5">
     <h4><flash-message transition-name="fade"></flash-message></h4>
     <form v-on:submit.prevent="uploadImages">
       <div class="row mt-4 " v-for="(row, index) in formRows">
@@ -28,9 +28,7 @@
 	      <div class="card" v-if="row.imageURL">
 		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
 		<div class="card-body" v-if="row.objType">
-		  <p v-if="row.objType == 'non_plant'" class="card-text">It seems to be not a plant</p>
-		  <p v-if="row.objType == 'plant' && row.diseaseType == 'potat_fitoftor'" class="card-text">Phytophthora (late blight)</p>
-		  <p v-if="row.objType == 'plant' && row.diseaseType == 'potat_nonfitoftor'" class="card-text">It's not a phytophthora (late blight)</p>
+		  {{row.objType}} {{row.diseaseType}}
 		</div>
 	      </div>
 	    </div>
@@ -72,7 +70,7 @@ export default {
  	}
     },
     created () {
-	//this.flashSuccess('welcome', {timeout: 2000})
+	this.flashSuccess('welcome', {timeout: 2000})
     },
     computed: {
 	...mapGetters({ currentUser: 'currentUser'})
@@ -127,7 +125,7 @@ export default {
 	    formData.append('croppedfile', blob, 'cropped.jpg')
 	    //formData.append('croppedfile', value.imageFile) 
 	    this.loading = true
-	    // this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
+	    this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
 	    this.$axios.post(this.$backendhost+'loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
 		.then(request => { this.parseResponse(request)
 				   this.loading = false
@@ -147,7 +145,8 @@ export default {
 	    })
 	},
 	parseResponse(resp) {
-	    this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
+	    //this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
+	    this.flashSuccess('File successfully parsed', {timeout: 5000})
 	    console.log(resp.data)
 	    let fito_status = resp.data.fito_status
 	    let objtype = resp.data.objtype
@@ -157,9 +156,15 @@ export default {
 	    this.formRows[index].fileName = resp.data.filename
 	},
 	failedResponse(resp) {
-	    if (!resp.response) {
-                this.flashWarning('Network error, server not responding', {timeout: 2000})
-            }
+	    if (error.response) { 
+		if (error.response.status == 429) {
+		    this.submitButtonText = 'Try again in a few minutes, max allowed 10 submits in 10 minutes reached'
+		    this.flashWarning('Too many requests, try again in a few minutes', {timeout: 5000})
+		}
+	    }
+	    else  {
+		this.flashWarning('Network error, server not responding', {timeout: 5000})
+	    }
 	},
 	clearFields(index) {
 	    if (this.formRows.length > 1) {
