@@ -68,7 +68,7 @@ export default {
  	}
     },
     created () {
-	//this.flashSuccess('welcome', {timeout: 2000})
+	this.flashSuccess('Welcome', {timeout: 2000})
     },
     computed: {
 	...mapGetters({ currentUser: 'currentUser'})
