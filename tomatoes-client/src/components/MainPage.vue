@@ -2,28 +2,9 @@
 <div class="mainpage">
   <div class="container">
     <h4><flash-message transition-name="fade"></flash-message></h4>
-    <h6>Leaves recognition demo</h6>
-    <h6>Upload a plant image and select a leaf on it.</h6>
+    <h6>Leaf Classifier v 0.1</h6>
+    <h6>Upload image of a plant and select a region to analyze.</h6>
     <form v-on:submit.prevent="uploadImages">
-      
-      <div class="row mt-4 ">
-	<div class="col">
-	  <label for="inputMode">Mode</label>
-	  <select v-model="input_mode" id="inputMode" name="inputMode" class="form-control">
-            <option >cpu</option>
-	    <option >cuda</option>
-	  </select>
-	</div>
-	<div class="col">
-	  <label for="inputThreshold">cf_threshold</label>
-	  <input type="number" v-model="cf_threshold" step=0.01 class="form-control" id="inputThreshold" name="inputThreshold" placeholder="cf_threshold">
-	</div>
-	<div class="col">
-	  <label for="inputMinSize">min_image_size</label>
-	  <input type="number" step=1 v-model="min_image_size" class="form-control" id="inputMinSize" name="inputMinSize" placeholder="min_image_size">
-	</div>
-
-      </div>
       <div class="row mt-4 " v-for="(row, index) in formRows">
 	<div class="col">
 	
@@ -44,8 +25,8 @@
 	    <div class="col">
 	      <div class="card" v-if="row.imageURL">
 		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
-		<div class="card-body" v-if="row.resURL">
-		  <img width="100%" :src="row.resURL" >
+		<div class="card-body" v-if="row.objType">
+		  <p class="card-text">{{row.objType}}</p>
 		</div>
 	      </div>
 	    </div>
@@ -75,20 +56,12 @@ export default {
     name: 'MainPage',
     data: function() {
 	return {
-	    input_mode: "cpu",
-	    cf_threshold: 0.8,
-	    min_image_size: 750,
 	    formRows: [{
 		imageFile: "",
 		responseData: "",
 		objType: "",
-		plantType: "",
-		plantStatus: "",
-		tomatoStatus: "",
-		pictType: "",
 		imageURL: "",
-		fileName: "",
-		resURL: ""
+		fileName: ""
 	    }],
 	    loading: false,
 	    submitButtonText: "Submit",
@@ -133,8 +106,8 @@ export default {
 
 		//let blob = this.dataURLtoBlob(dataurl)
 		var newcanvas =  document.createElement('canvas')
-		newcanvas.height = canvas.height * 0.7
-		newcanvas.width = canvas.width * 0.7
+		newcanvas.height = canvas.height * 0.4
+		newcanvas.width = canvas.width * 0.4
 		
 		pica.resize(canvas, newcanvas)
 		    .then(result => pica.toBlob(result, 'image/jpeg', 0.90))
@@ -149,16 +122,12 @@ export default {
 	},
 	sendImage(blob, fname, index) {
 	    let formData = new FormData()
-	    formData.append('inputMinSize', this.min_image_size)
-	    formData.append('inputMode', this.input_mode)
-	    formData.append('inputThreshold', this.cf_threshold)
 	    formData.append('filename', fname)
 	    formData.append('index', index)
 	    formData.append('croppedfile', blob, 'cropped.jpg')
 	    //formData.append('croppedfile', value.imageFile) 
 	    this.loading = true
-	    // this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
-	    console.log(this.$backendhost)
+	    this.flashInfo('Request sent, waiting for response', {timeout: 5000})
 	    this.$axios.post(this.$backendhost+'loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
 		.then(request => { this.parseResponse(request)
 				   this.loading = false
@@ -174,43 +143,30 @@ export default {
 		this.formRows.push({
 		    imageFile: "",
 		    objType: "",
-		    plantType: "",
-		    pictType: "",
-		    plantStatus: "",
-		    tomatoStatus: "",
 		    imageURL: "",
-		    fileName: "",
-		    resURL: ""
+		    fileName: ""
 		})
 	    }
 	},
 	parseResponse(resp) {
+	    console.log("RESP", resp.data)
 	    //this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
-	    console.log(resp.data)
 	    this.flashSuccess('File successfully parsed', {timeout: 5000})
-	    let picttype = resp.data.picttype
-	    let planttype = resp.data.planttype
-	    let plantstatus = resp.data.plantstatus
 	    let objtype = resp.data.objtype
-	    let tomatostatus = resp.data.tomatostatus
-	    
 	    let index = resp.data.index
 	    this.formRows[index].objType = objtype
-	    this.formRows[index].plantType = planttype
-	    this.formRows[index].plantStatus = plantstatus
-	    this.formRows[index].pictType = picttype
-	    this.formRows[index].tomatoStatus = tomatostatus
 	    this.formRows[index].fileName = resp.data.filename
-	    this.formRows[index].resURL = resp.data.url
 	},
 	failedResponse(error) {
-	    console.log(error.response.status)
-	    if (error.response.status == 429) {
-		this.submitButtonText = 'Try again in a few minutes, max allowed 10 submits in 10 minutes reached'
-		this.flashWarning('Too many requests, try again in a few minutes', {timeout: 2000})
+	    //console.log(error.response.status)
+	    if (error.response) { 
+		if (error.response.status == 429) {
+		    this.submitButtonText = 'Try again in a few minutes, max allowed 10 submits in 10 minutes reached'
+		    this.flashWarning('Too many requests, try again in a few minutes', {timeout: 5000})
+		}
 	    }
-	    if (!error.response) {
-		this.flashWarning('Network error, server not responding', {timeout: 2000})
+	    else  {
+		this.flashWarning('Network error, server not responding', {timeout: 5000})
 	    }
 	},
 	deleteRow(index) {
@@ -225,11 +181,7 @@ export default {
 	},
 	clearFields(index) {
 	    console.log("Clear fields")
-	    this.formRows[index].plantType = ""
 	    this.formRows[index].objType = ""
-	    this.formRows[index].pictType = ""
-	    this.formRows[index].plantStatus = ""
-	    this.formRows[index].tomatoStatus = ""
 	}
     }
 
