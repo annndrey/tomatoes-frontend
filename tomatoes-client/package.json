@@ -16,7 +16,7 @@
     "vue-flash-message": "^0.7.2",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.2",
-    "vuejs-clipper": "^0.2.9",
+    "vuejs-clipper": "^1.1.8",
     "vuex": "^3.1.0"
   },
   "devDependencies": {

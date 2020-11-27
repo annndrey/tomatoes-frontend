@@ -2,15 +2,15 @@
 <div class="mainpage">
   <div class="container">
     <h4><flash-message transition-name="fade"></flash-message></h4>
-    <h6>Classifiers version 1.0: tomato/not-tomato, healthy/unhealthy</h6>
-    <h6>Upload image of a plant and select a leaf on it.</h6>
+    <h6>Region Classifier</h6>
+    <h6>Upload image of a plant</h6>
     <form v-on:submit.prevent="uploadImages">
       <div class="row mt-4 " v-for="(row, index) in formRows">
 	<div class="col">
 	
 	  <div class="row mt-4 ">
 	    <div class="col-5 ">
-		<button class="btn btn-outline-secondary float-left" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>
+	      <!--<button class="btn btn-outline-secondary float-left" type="button" id="inputAddNewInput" @click="addFileUploadField"><img height="11px" src="@/assets/plus.svg"></button>-->
 		<button class="btn btn-outline-secondary float-left" type="button" id="inputDeleteInput" @click="deleteRow(index)"><img height="13px" src="@/assets/trash.svg"></button>
 	    </div>
 	    <div class="col-7 ">
@@ -23,17 +23,13 @@
 	  
 	  <div class="row mt-2">
 	    <div class="col">
-	      <!--<input type="file" class="custom-file-input" @change="setFile($event, index)" id="inputfileField" accept="image/*;capture=camera" aria-describedby="inputFileFieldDescr">
-		  <label  class="custom-file-label" for="inputFileField" id="inputFileFieldDescr">{{row.fileName}}</label>-->
 	      <div class="card" v-if="row.imageURL">
-		<clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" ></clipper-basic>
-		<!--<clipper-preview :name="'fixed-preview'+index"></clipper-preview>-->
-		<div class="card-body" v-if="row.plantStatus">
-
-		  <p v-if="row.objType == 'non_plant'" class="card-text">The selection is not a plant. Upload image of a plant and select a leaf on it.</p>
-		  <p v-if="row.objType == 'plant' && row.pictType == 'not_single_leaf'" class="card-text">The selection is not a single leaf, the answer may be inaccurate. Please, select a leaf.</p>
-		  <p v-if="row.objType == 'plant' && row.plantType == 'tomat'" class="card-text">Plant Type: Tomato<br>Plant Status: {{row.tomatoStatus == "tomat_non_health" ? "Not healthy" : "Healthy"}}</p>
-		  <p v-if="row.objType == 'plant' && row.plantType == 'non_tomat'" class="card-text">Plant Type: Not Tomato<br>Plant Status: {{row.plantStatus == "plants_non_healthy" ? "Not Healthy" : "Healthy"}}</p>
+		<div class="canvas-wrapper">
+		  <clipper-basic :src="row.imageURL" :preview="'fixed-preview'+index" :ref="'clipper'+index" initWidth=100 initHeight=100></clipper-basic>
+		  <canvas ref="myCanvas" class="canvas-overlay"></canvas>
+		</div>
+		  <div class="card-body" v-if="row.objType">
+		  <p class="card-text">{{row.objType}}</p>
 		</div>
 	      </div>
 	    </div>
@@ -67,10 +63,6 @@ export default {
 		imageFile: "",
 		responseData: "",
 		objType: "",
-		plantType: "",
-		plantStatus: "",
-		tomatoStatus: "",
-		pictType: "",
 		imageURL: "",
 		fileName: ""
 	    }],
@@ -79,7 +71,7 @@ export default {
  	}
     },
     created () {
-	//this.flashSuccess('welcome', {timeout: 2000})
+	this.flashSuccess('Welcome', {timeout: 2000})
     },
     computed: {
 	...mapGetters({ currentUser: 'currentUser'})
@@ -105,27 +97,37 @@ export default {
 	    this.formRows[index].imageFile = files[0]
 	    this.formRows[index].imageURL = URL.createObjectURL(files[0])
 	    this.formRows[index].fileName = files[0].name
+	    //
+	    //let clipperID = 'clipper'+index
+	    //const clipper = this.$refs[clipperID][0]
+	    //let canvas = clipper.clip()
+
 	},
 	uploadImages() {
 	    for (const [index, value] of this.formRows.entries()) {
-		const pica = Pica()
 		let clipperID = 'clipper'+index
 		const clipper = this.$refs[clipperID][0]
-
 		let canvas = clipper.clip()
-		const dataurl = canvas.toDataURL("image/jpeg", 1)
+		let c = this.$el.getElementsByClassName('canvas-overlay')[0]
+		var ctx = c.getContext("2d")
+		ctx.clearRect(0,0,c.width,c.height)
 
-		//let blob = this.dataURLtoBlob(dataurl)
-		var newcanvas =  document.createElement('canvas')
-		newcanvas.height = canvas.height * 0.4
-		newcanvas.width = canvas.width * 0.4
+		const dataurl = canvas.toDataURL("image/jpeg", 1)
+		let blob = this.dataURLtoBlob(dataurl)
 		
-		pica.resize(canvas, newcanvas)
-		    .then(result => pica.toBlob(result, 'image/jpeg', 0.90))
-		    .then(blob => {this.sendImage(blob, value.imageFile.name, index)
-				   this.clearFields(index)
-				  }
-			 )
+		this.sendImage(blob, value.imageFile.name, index)
+
+		//var newcanvas =  document.createElement('canvas')
+		
+		//newcanvas.height = canvas.height * 0.4
+		//newcanvas.width = canvas.width * 0.4
+		
+		//pica.resize(canvas, newcanvas)
+		//    .then(result => pica.toBlob(result, 'image/jpeg', 0.90))
+		//    .then(blob => {this.sendImage(blob, value.imageFile.name, index)
+		//		   this.clearFields(index)
+		//		  }
+		//	 )
 		
 		//document.body.appendChild(newcanvas)
 		
@@ -136,17 +138,24 @@ export default {
 	    formData.append('filename', fname)
 	    formData.append('index', index)
 	    formData.append('croppedfile', blob, 'cropped.jpg')
+	    //let recognize_result = null
 	    //formData.append('croppedfile', value.imageFile) 
 	    this.loading = true
-	    // this.flashInfo('Request sent, waiting for a response', {timeout: 5000})
+	    this.flashInfo('Request sent, waiting for response', {timeout: 5000})
 	    this.$axios.post(this.$backendhost+'loadimage', formData, {Headers: {'Content-Type': 'multipart/form-data'}})
-		.then(request => { this.parseResponse(request)
-				   this.loading = false
-				   this.submitButtonText = "Submit"
-				 })
+		.then(request => {
+		    this.parseResponse(request)
+		    this.loading = false
+		    this.submitButtonText = "Submit"
+		})
 		.catch(error => {this.failedResponse(error)
-				   this.loading = false
-				  })
+				 this.loading = false
+				})
+	    //if (recognize_result) {
+		//return recognize_result
+	    //} else {
+		//return null
+	    //}
 	    
 	},
 	addFileUploadField() {
@@ -154,40 +163,91 @@ export default {
 		this.formRows.push({
 		    imageFile: "",
 		    objType: "",
-		    plantType: "",
-		    pictType: "",
-		    plantStatus: "",
-		    tomatoStatus: "",
 		    imageURL: "",
 		    fileName: ""
 		})
 	    }
 	},
 	parseResponse(resp) {
+	    console.log("RESP", resp.data)
 	    //this.flashSuccess('File ' + resp.data.filename + " parsed", {timeout: 5000})
 	    this.flashSuccess('File successfully parsed', {timeout: 5000})
-	    let picttype = resp.data.picttype
-	    let planttype = resp.data.planttype
-	    let plantstatus = resp.data.plantstatus
 	    let objtype = resp.data.objtype
-	    let tomatostatus = resp.data.tomatostatus
-	    
-	    let index = resp.data.index
+	    let index = 0 // resp.data.index
 	    this.formRows[index].objType = objtype
-	    this.formRows[index].plantType = planttype
-	    this.formRows[index].plantStatus = plantstatus
-	    this.formRows[index].pictType = picttype
-	    this.formRows[index].tomatoStatus = tomatostatus
 	    this.formRows[index].fileName = resp.data.filename
+	    //if (objtype.length > 0) {
+	    console.log(objtype)
+	    // TODO: Use differrent colors for different diagnoses
+	    // TODO: Combine nearest regions with the same diagnosis
+	    let clipperID = 'clipper'+index
+	    const clipper = this.$refs[clipperID][0]
+	    let canvas = clipper.clip()
+	    let c = this.$el.getElementsByClassName('canvas-overlay')[0]
+	    c.width = canvas.width
+	    c.height = canvas.height
+	    var ctx = c.getContext("2d")
+	    ctx.clearRect(0,0,c.width,c.height)
+	    ctx.lineWidth = 4
+	    //ctx.strokeStyle = "red"
+	    //ctx.font = "30px Verdana"
+	    ctx.font = "italic 30pt Arial";
+	    //ctx.fillStyle = "red"
+	    //ctx.textBaseline = 'top'
+	    ctx.textBaseline="top"
+	    
+	    objtype.forEach(function(coords, index) {
+		//[left, top, right, bottom]
+		let region = coords.region
+		let results = coords.result
+		//var ctxregion = c.getContext("2d")
+		let regioncolor = "#4CB066"
+		if ( results.State == "unhealthy" ) {
+		    regioncolor = "#F05648"
+		}
+		ctx.strokeStyle = regioncolor
+		ctx.fillStyle = regioncolor
+		
+		ctx.beginPath();
+		//(x, y, width, height)
+		ctx.rect(region[0]+6, region[1]-6, region[2]-region[0]-6, region[3]-region[1]-6);
+		ctx.stroke()
+
+		var textres = []
+		if (results.Object) {
+		    textres.push(results.Object)
+		}
+		if (results.State) {
+		    textres.push(results.State)
+		}
+		if (results.Diagnosis) {
+		    if (results.Diagnosis != "unknown") {
+			textres.push(results.Diagnosis)
+		    }
+		}
+		var textHeight = ctx.measureText(textres)
+		console.log("text height", textHeight)
+		ctx.globalAlpha = 0.3
+		ctx.fillRect(region[0], region[1], region[2]-region[0], 35);
+		ctx.globalAlpha = 1
+		ctx.fillStyle = "white"
+		ctx.fillText(textres.join(", "), region[0] + 10, region[1])
+		ctx.fillStyle = regioncolor
+	    })
+
+	    //}
+		//return this.objtype
 	},
 	failedResponse(error) {
-	    console.log(error.response.status)
-	    if (error.response.status == 429) {
-		this.submitButtonText = 'Try again in a few minutes, max allowed 10 submits in 10 minutes reached'
-		this.flashWarning('Too many requests, try again in a few minutes', {timeout: 2000})
+	    console.log(error)
+	    if (error.response) { 
+		if (error.response.status == 429) {
+		    this.submitButtonText = 'Try again in a few minutes, max allowed 10 submits in 10 minutes reached'
+		    this.flashWarning('Too many requests, try again in a few minutes', {timeout: 5000})
+		}
 	    }
-	    if (!error.response) {
-		this.flashWarning('Network error, server not responding', {timeout: 2000})
+	    else  {
+		this.flashWarning('Network error, server not responding', {timeout: 5000})
 	    }
 	},
 	deleteRow(index) {
@@ -202,11 +262,12 @@ export default {
 	},
 	clearFields(index) {
 	    console.log("Clear fields")
-	    this.formRows[index].plantType = ""
 	    this.formRows[index].objType = ""
-	    this.formRows[index].pictType = ""
-	    this.formRows[index].plantStatus = ""
-	    this.formRows[index].tomatoStatus = ""
+	    let c = this.$el.getElementsByClassName('canvas-overlay')[0]
+	    if (c) {
+		var ctx = c.getContext("2d")
+		ctx.clearRect(0,0,c.width,c.height)
+	    }
 	}
     }
 
@@ -244,6 +305,20 @@ export default {
   }
   a {
   color: #42b983;
+  }
+  .canvas-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%
+  }
+
+  .canvas-wrapper {
+    position: relative;
   }
   .loading {
       position: fixed;
